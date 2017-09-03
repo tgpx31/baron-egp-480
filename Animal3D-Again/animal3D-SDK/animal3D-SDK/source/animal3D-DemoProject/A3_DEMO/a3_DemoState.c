@@ -549,6 +549,18 @@ void a3demo_initScene(a3_DemoState *demoState)
 		demoState->lightObject->position.z = +cameraAxisPos;
 	}
 
+	// make objects move: 
+	//	- teapot rotates counter-clockwise about axis
+	//	- earth has a constant tilt of 23.5 degrees
+	//	- earth rotates counter-clockwise about axis
+	//	- earth orbits counter-clockwise about teapot's position
+	//	- yes, the sun is a teapot
+	demoState->teapotRot		= 1;
+	demoState->earthRot			= 1;
+	demoState->earthTilt		= 23.5f;
+	demoState->earthOrbit		= 1;
+	demoState->earthDistance	= 10;
+
 
 	// other scene objects
 	demoState->earthObject->position.x = 8.0f;
@@ -636,8 +648,20 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 	// ****
 	// make objects move: 
 	//	- teapot rotates counter-clockwise about axis
+	int teapotRot = demoState->teapotObject->euler.y += demoState->teapotRot;
+	if (teapotRot >= 360)
+		teapotRot = 0;
+	demoState->teapotObject->euler.y = teapotRot;
+
 	//	- earth has a constant tilt of 23.5 degrees
+	demoState->earthObject->euler.y = demoState->earthTilt;
+
 	//	- earth rotates counter-clockwise about axis
+	int earthRot = demoState->earthObject->euler.z += demoState->earthRot;
+	if (earthRot >= 360)
+		earthRot = 0;
+	demoState->earthObject->euler.z = earthRot;
+
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
 

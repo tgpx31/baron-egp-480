@@ -128,6 +128,12 @@ extern "C"
 		//	- earth tilt
 		//	- earth orbit
 		//	- earth orbit distance
+		unsigned int teapotRot;
+		unsigned int earthRot;
+		p3real earthTilt;
+		unsigned int earthOrbit;
+		unsigned int earthDistance;
+
 
 
 		//---------------------------------------------------------------------
