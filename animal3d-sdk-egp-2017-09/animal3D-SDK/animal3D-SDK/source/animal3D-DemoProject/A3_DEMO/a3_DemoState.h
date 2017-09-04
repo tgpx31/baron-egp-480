@@ -61,13 +61,13 @@ typedef struct a3_DemoStateShaderProgram	a3_DemoStateShaderProgram;
 //	more than enough memory to hold extra objects
 enum a3_DemoStateObjectMaxCounts
 {
-	demoStateMaxCount_sceneObject = 4,
+	demoStateMaxCount_sceneObject = 8,
 	demoStateMaxCount_camera = 1,
 	demoStateMaxCount_timer = 1,
 	demoStateMaxCount_texture = 4,
 	demoStateMaxCount_drawDataBuffer = 1,
 	demoStateMaxCount_vertexArray = 4,
-	demoStateMaxCount_drawable = 4,
+	demoStateMaxCount_drawable = 8,
 	demoStateMaxCount_shaderProgram = 4,
 	demoStateMaxCount_shaderProgramUniform = 8,
 };
@@ -166,7 +166,8 @@ struct a3_DemoState
 				cameraObject[1],					// transform for camera
 				lightObject[1],						// transform for light
 				earthObject[1],						// transform for earth sphere
-				teapotObject[1];					// transform for checkered teapot
+				teapotObject[1],					// transform for checkered teapot
+				customObject[1];
 		};
 	};
 
