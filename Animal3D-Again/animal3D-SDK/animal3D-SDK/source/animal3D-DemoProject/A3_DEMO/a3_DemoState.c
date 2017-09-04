@@ -651,6 +651,7 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 	int teapotRot = demoState->teapotObject->euler.y += demoState->teapotRot;
 	if (teapotRot >= 360)
 		teapotRot = 0;
+
 	demoState->teapotObject->euler.y = teapotRot;
 
 	//	- earth has a constant tilt of 23.5 degrees
@@ -664,7 +665,9 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
-
+	demoState->earthObject->position.y = p3sind(demoState->earthObject->euler.z);
+	//demoState->earthObject->position.x = p3tand(demoState->earthObject->euler.z);
+	//demoState->earthObject->position.z = p3sind(demoState->earthObject->euler.z);
 
 	// controls
 	
