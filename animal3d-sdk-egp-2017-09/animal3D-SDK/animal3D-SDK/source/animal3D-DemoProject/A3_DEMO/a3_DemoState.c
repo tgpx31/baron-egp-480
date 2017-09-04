@@ -556,7 +556,7 @@ void a3demo_initScene(a3_DemoState *demoState)
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
 	demoState->teapotRot = 1;
-	demoState->earthRot = 1;
+	demoState->earthRot = 10;
 	demoState->earthTilt = 23.5f;
 	demoState->earthOrbit = 1;
 	demoState->earthDistance = 10;
@@ -665,7 +665,8 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
-	demoState->earthObject->position.y = p3sind(demoState->earthObject->euler.z);
+	demoState->earthObject->position.y = demoState->earthDistance * p3sind(demoState->teapotObject->euler.y);
+	demoState->earthObject->position.x = demoState->earthDistance * p3cosd(demoState->teapotObject->euler.y);
 	//demoState->earthObject->position.x = p3tand(demoState->earthObject->euler.z);
 	//demoState->earthObject->position.z = p3sind(demoState->earthObject->euler.z);
 
