@@ -740,8 +740,39 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 	// ****TO-DO: 
 	//	- animate path-following object
 	// update segment time
-	// 
+	// calculate t param
+	//		current segment time / total segment time
 
+	{
+		const float segmentDuration = 4.0f;
+
+		
+
+		demoState->segmentTime += (float)dt;
+		if (demoState->segmentTime >= segmentDuration)
+		{
+			demoState->segmentTime -= segmentDuration;
+			++demoState->currentWaypointIndex;
+			if (demoState->currentWaypointIndex > demoState->waypointCount - 2)
+				demoState->currentWaypointIndex = 0;
+		}
+
+		// t
+		demoState->currentSegmentParam = demoState->segmentTime / segmentDuration;
+	}
+
+	// control teapot
+	{
+		const p3vec3 p0 = demoState->waypoints[demoState->currentWaypointIndex];
+		const p3vec3 p1 = demoState->waypoints[demoState->currentWaypointIndex + 1];
+		const p3vec3 m0 = demoState->waypointHandles[demoState->currentWaypointIndex];
+		const p3vec3 m1 = demoState->waypointHandles[demoState->currentWaypointIndex + 1];
+
+		if (demoState->useHermiteCurveSegments)
+			p3real3HermiteControl(demoState->pathObject->position.v, p0.v, p1.v, m0.v, m1.v, demoState->currentSegmentParam);
+		else
+			p3real3Lerp(demoState->pathObject->position.v, p0.v, p1.v, demoState->currentSegmentParam);
+	}
 
 	// ****TO-DO
 	//	- implement speed control sampling
