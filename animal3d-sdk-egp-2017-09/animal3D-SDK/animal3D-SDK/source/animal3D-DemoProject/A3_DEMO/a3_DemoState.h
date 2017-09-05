@@ -168,7 +168,7 @@ struct a3_DemoState
 				lightObject[1],						// transform for light
 				earthObject[1],						// transform for earth sphere
 				teapotObject[1],					// transform for checkered teapot
-				customObject[1];
+				capsuleObject[1];
 		};
 	};
 
@@ -231,7 +231,8 @@ struct a3_DemoState
 				draw_grid[1],								// wireframe ground plane to emphasize scaling
 				draw_axes[1],								// coordinate axes at the center of the world
 				draw_sphere[1],								// procedural sphere
-				draw_teapot[1];								// loaded teapot model
+				draw_teapot[1],								// loaded teapot model
+				draw_capsule[1];
 		};
 	};
 

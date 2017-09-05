@@ -118,6 +118,8 @@ void a3demo_loadTextures(a3_DemoState *demoState)
 // utility to load geometry
 void a3demo_loadGeometry(a3_DemoState *demoState)
 {
+	demoState->streaming = 0;
+
 	// static model transformations
 	static const p3mat4 downscaleTenth = {
 		+0.1f, 0.0f, 0.0f, 0.0f,
@@ -141,10 +143,10 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 
 	// geometry data
 	a3_GeometryData sceneShapesData[2] = { 0 };
-	a3_GeometryData proceduralShapesData[1] = { 0 };
+	a3_GeometryData proceduralShapesData[2] = { 0 };
 	a3_GeometryData loadedModelsData[1] = { 0 };
 	const unsigned int sceneShapesCount = 2;
-	const unsigned int proceduralShapesCount = 1;
+	const unsigned int proceduralShapesCount = 2;
 	const unsigned int loadedModelsCount = 1;
 
 	// common index format
@@ -177,7 +179,7 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 	{
 		// create new data
 		a3_ProceduralGeometryDescriptor sceneShapes[2] = { 0 };
-		a3_ProceduralGeometryDescriptor proceduralShapes[1] = { 0 };
+		a3_ProceduralGeometryDescriptor proceduralShapes[2] = { 0 };
 
 		// static scene procedural objects
 		a3proceduralCreateDescriptorAxes(sceneShapes + 0, a3geomFlag_wireframe, 0.0f, 1);
@@ -190,6 +192,7 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 
 		// procedural
 		a3proceduralCreateDescriptorSphere(proceduralShapes + 0, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 24, 16);
+		a3proceduralCreateDescriptorCapsule(proceduralShapes + 1, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 2.0f, 24, 16, 16);
 		for (i = 0; i < proceduralShapesCount; ++i)
 		{
 			a3proceduralGenerateGeometryData(proceduralShapesData + i, proceduralShapes + i);
@@ -266,6 +269,10 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 	a3geometryGenerateVertexArray(vao, proceduralShapesData + 0, vbo_ibo, sharedVertexStorage);
 	currentDrawable = demoState->draw_sphere;
 	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, proceduralShapesData + 0, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
+	
+	currentDrawable = demoState->draw_capsule;
+	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, proceduralShapesData + 1, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
+
 	currentDrawable = demoState->draw_teapot;
 	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, loadedModelsData + 0, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
 
@@ -566,6 +573,9 @@ void a3demo_initScene(a3_DemoState *demoState)
 	// other scene objects
 	demoState->earthObject->position.x = 8.0f;
 	demoState->teapotObject->position.x = 0.0f;
+
+	demoState->capsuleObject->position.x = 8.0f;
+	//demoState->cubeObject->position.y = 3.0f;
 }
 
 
@@ -820,6 +830,29 @@ void a3demo_render(a3_DemoState *demoState)
 	a3textureActivate(demoState->tex_earth_sm, a3tex_unit01);
 	a3vertexActivateAndRenderDrawable(currentDrawable);
 
+	{
+		currentDrawable = demoState->draw_capsule;
+		currentSceneObject = demoState->capsuleObject;
+		if (useVerticalY)	// capsule's axis is Z
+		{
+			p3real4x4ProductTransform(modelMat.m, convertZ2Y.m, currentSceneObject->modelMat.m);
+			p3real4x4TransformInverseIgnoreScale(modelMatInv.m, modelMat.m);
+		}
+		else
+		{
+			modelMat = currentSceneObject->modelMat;
+			modelMatInv = currentSceneObject->modelMatInv;
+		}
+		p3real4x4Product(modelViewProjectionMat.m, demoState->camera->viewProjectionMat.m, modelMat.m);
+		p3real4TransformProduct(lightPos_obj.v, modelMatInv.m, demoState->lightObject->modelMat.v3.v);
+		p3real4TransformProduct(eyePos_obj.v, modelMatInv.m, demoState->cameraObject->modelMat.v3.v);
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewProjectionMat.mm);
+		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos_obj, 1, lightPos_obj.v);
+		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uEyePos_obj, 1, eyePos_obj.v);
+		a3textureActivate(demoState->tex_earth_dm, a3tex_unit00);
+		a3textureActivate(demoState->tex_earth_sm, a3tex_unit01);
+		a3vertexActivateAndRenderDrawable(currentDrawable);
+	}
 
 	// draw grid aligned to world
 	currentDemoProgram = demoState->prog_drawColorUnif;
