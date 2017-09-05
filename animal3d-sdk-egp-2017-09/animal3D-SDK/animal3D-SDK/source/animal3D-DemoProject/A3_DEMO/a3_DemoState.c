@@ -118,8 +118,6 @@ void a3demo_loadTextures(a3_DemoState *demoState)
 // utility to load geometry
 void a3demo_loadGeometry(a3_DemoState *demoState)
 {
-	demoState->streaming = 0;
-
 	// static model transformations
 	static const p3mat4 downscaleTenth = {
 		+0.1f, 0.0f, 0.0f, 0.0f,
@@ -179,7 +177,7 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 	{
 		// create new data
 		a3_ProceduralGeometryDescriptor sceneShapes[2] = { 0 };
-		a3_ProceduralGeometryDescriptor proceduralShapes[2] = { 0 };
+		a3_ProceduralGeometryDescriptor proceduralShapes[2] = { 0 };	// increment to accomodate new obj
 
 		// static scene procedural objects
 		a3proceduralCreateDescriptorAxes(sceneShapes + 0, a3geomFlag_wireframe, 0.0f, 1);
@@ -192,7 +190,7 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 
 		// procedural
 		a3proceduralCreateDescriptorSphere(proceduralShapes + 0, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 24, 16);
-		a3proceduralCreateDescriptorCapsule(proceduralShapes + 1, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 2.0f, 24, 16, 16);
+		a3proceduralCreateDescriptorCapsule(proceduralShapes + 1, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 2.0f, 24, 16, 16);	// for capsule
 		for (i = 0; i < proceduralShapesCount; ++i)
 		{
 			a3proceduralGenerateGeometryData(proceduralShapesData + i, proceduralShapes + i);
@@ -270,6 +268,7 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 	currentDrawable = demoState->draw_sphere;
 	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, proceduralShapesData + 0, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
 	
+	// capsule setup
 	currentDrawable = demoState->draw_capsule;
 	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, proceduralShapesData + 1, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
 
@@ -574,8 +573,11 @@ void a3demo_initScene(a3_DemoState *demoState)
 	demoState->earthObject->position.x = 8.0f;
 	demoState->teapotObject->position.x = 0.0f;
 
+	// capsule animation params
 	demoState->capsuleObject->position.x = 8.0f;
-	//demoState->cubeObject->position.y = 3.0f;
+	demoState->capsuleRot1 = .75f;
+	demoState->capsuleRot2 = .25f;
+	demoState->capsuleSpeed = 5;
 }
 
 
@@ -686,6 +688,10 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 
 	demoState->earthObject->position.x = p3cosd(demoState->earthCurrOrbit) * demoState->earthDistance;
 	demoState->earthObject->position.y = p3sind(demoState->earthCurrOrbit) * demoState->earthDistance;
+
+	// animate capsule
+	demoState->capsuleObject->position.z = p3tand(demoState->earthCurrOrbit);
+	a3demo_rotateSceneObject(demoState->capsuleObject, demoState->capsuleSpeed, demoState->capsuleRot1, demoState->capsuleRot2, 0);
 
 	// controls
 
@@ -830,6 +836,7 @@ void a3demo_render(a3_DemoState *demoState)
 	a3textureActivate(demoState->tex_earth_sm, a3tex_unit01);
 	a3vertexActivateAndRenderDrawable(currentDrawable);
 
+	// Draw the capsule
 	{
 		currentDrawable = demoState->draw_capsule;
 		currentSceneObject = demoState->capsuleObject;

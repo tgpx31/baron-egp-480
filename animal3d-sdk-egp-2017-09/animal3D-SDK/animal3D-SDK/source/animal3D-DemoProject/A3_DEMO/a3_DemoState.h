@@ -135,7 +135,9 @@ struct a3_DemoState
 	p3real earthCurrOrbit;
 	unsigned int earthDistance;
 
-
+	float capsuleRot1;
+	float capsuleRot2;
+	int capsuleSpeed;
 
 	//---------------------------------------------------------------------
 	// objects that have known or fixed instance count in the whole demo
@@ -168,7 +170,7 @@ struct a3_DemoState
 				lightObject[1],						// transform for light
 				earthObject[1],						// transform for earth sphere
 				teapotObject[1],					// transform for checkered teapot
-				capsuleObject[1];
+				capsuleObject[1];					// Object for lab1
 		};
 	};
 
@@ -232,7 +234,7 @@ struct a3_DemoState
 				draw_axes[1],								// coordinate axes at the center of the world
 				draw_sphere[1],								// procedural sphere
 				draw_teapot[1],								// loaded teapot model
-				draw_capsule[1];
+				draw_capsule[1];							// procedural obj for lab1
 		};
 	};
 
