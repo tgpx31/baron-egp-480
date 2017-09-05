@@ -666,7 +666,7 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
-	p3real orbitAngle = (demoState->teapotObject->euler.y * demoState->earthOrbit * (float)dt);
+	p3real orbitAngle = (teapotRot * demoState->earthOrbit * (float)dt);
 	if (orbitAngle > 360)
 		orbitAngle -= 360;
 
