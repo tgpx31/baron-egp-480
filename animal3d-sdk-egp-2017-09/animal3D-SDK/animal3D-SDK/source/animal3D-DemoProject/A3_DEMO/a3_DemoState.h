@@ -131,7 +131,8 @@ struct a3_DemoState
 	unsigned int teapotRot;
 	unsigned int earthRot;
 	p3real earthTilt;
-	unsigned int earthOrbit;
+	p3real earthOrbit;
+	p3real earthCurrOrbit;
 	unsigned int earthDistance;
 
 

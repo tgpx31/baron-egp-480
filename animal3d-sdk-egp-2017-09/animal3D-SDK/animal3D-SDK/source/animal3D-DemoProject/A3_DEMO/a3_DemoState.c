@@ -555,11 +555,12 @@ void a3demo_initScene(a3_DemoState *demoState)
 	//	- earth rotates counter-clockwise about axis
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
-	demoState->teapotRot = 1;
-	demoState->earthRot = 10;
+	demoState->teapotRot = 100;
+	demoState->earthRot = 150;
 	demoState->earthTilt = 23.5f;
-	demoState->earthOrbit = 1;
-	demoState->earthDistance = 10;
+	demoState->earthOrbit = 50;
+	demoState->earthCurrOrbit = 0;
+	demoState->earthDistance = 7;
 
 
 	// other scene objects
@@ -648,7 +649,7 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 	// ****
 	// make objects move: 
 	//	- teapot rotates counter-clockwise about axis
-	int teapotRot = demoState->teapotObject->euler.y += demoState->teapotRot;
+	int teapotRot = demoState->teapotObject->euler.y += demoState->teapotRot * (float)dt;
 	if (teapotRot >= 360)
 		teapotRot = 0;
 
@@ -658,17 +659,23 @@ void a3demo_update(a3_DemoState *demoState, double dt)
 	demoState->earthObject->euler.y = demoState->earthTilt;
 
 	//	- earth rotates counter-clockwise about axis
-	int earthRot = demoState->earthObject->euler.z += demoState->earthRot;
+	int earthRot = demoState->earthObject->euler.z += demoState->earthRot * (float)dt;
 	if (earthRot >= 360)
 		earthRot = 0;
 	demoState->earthObject->euler.z = earthRot;
 
 	//	- earth orbits counter-clockwise about teapot's position
 	//	- yes, the sun is a teapot
-	demoState->earthObject->position.y = demoState->earthDistance * p3sind(demoState->teapotObject->euler.y);
-	demoState->earthObject->position.x = demoState->earthDistance * p3cosd(demoState->teapotObject->euler.y);
-	//demoState->earthObject->position.x = p3tand(demoState->earthObject->euler.z);
-	//demoState->earthObject->position.z = p3sind(demoState->earthObject->euler.z);
+	p3real orbitAngle = (demoState->teapotObject->euler.y * demoState->earthOrbit * (float)dt);
+	if (orbitAngle > 360)
+		orbitAngle -= 360;
+
+	demoState->earthCurrOrbit += demoState->earthOrbit * (float)dt;
+	if (demoState->earthCurrOrbit >= 360)
+		demoState->earthCurrOrbit -= 360;
+
+	demoState->earthObject->position.x = p3cosd(demoState->earthCurrOrbit) * demoState->earthDistance;
+	demoState->earthObject->position.y = p3sind(demoState->earthCurrOrbit) * demoState->earthDistance;
 
 	// controls
 
